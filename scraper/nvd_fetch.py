@@ -5,7 +5,7 @@ import ssl
 # api_key = False
 
 # if (api_key == False):
-#     api_key = "3659d776-1785-40e7-b75a-f44ab45b271b"
+#     api_key = ""
 serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0/?resultsPerPage=1&startIndex=0"
 
 param = ""
