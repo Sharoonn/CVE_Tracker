@@ -1,0 +1,44 @@
+✅ NVD CVE API (What you’ll use)
+
+Endpoint: NVD CVE JSON API (v2.0)
+
+Data format: JSON
+
+Supports filters (date, keyword, severity)
+
+🧱 STEP 2B — Decide What Fields to Store (Minimal but Meaningful)
+
+cve_id
+description
+published_date
+last_modified_date
+cvss_score
+severity
+affected_products (optional)
+reference_urls
+
+Option 2
+
+JSON file (acceptable, but less impressive)
+
+👉 SQLite will impress Ivan more.
+
+After JSON works we'll use SQLite
+
+✅ Option 1 (Recommended for now)
+
+SQLite database
+
+Professional
+
+Lightweight
+
+No setup needed
+
+
+🧱 STEP 2B- This is what I will fetch from NVD and store locally
+
+cve_id
+description
+published_date
+severity
