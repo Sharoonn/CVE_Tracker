@@ -12,7 +12,7 @@ import json
 # # "https://services.nvd.nist.gov/rest/json/cves/2.0/?KeywordSearch=Microsoft"
 
 # #     api_key = ""
-serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0/?resultsPerPage=1&startIndex=0"
+
 
 
 # param = ""
@@ -30,18 +30,62 @@ serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0/?resultsPerPage=1
 #     file.write(data)
 
 
-with urllib.request.urlopen(serviceUrl) as response:
-    raw_data = response.read()
-    data = json.loads(raw_data)
+serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0/?resultsPerPage=10&startIndex=0"
 
-    cve_data = data["vulnerabilities"][0]["cve"]
 
-    cve_id = cve_data["id"]
-    cve_description = cve_data["descriptions"][0]["value"]
-    severity = cve_data["metrics"]["cvssMetricV2"][0]["baseSeverity"]
-    exploit_score = cve_data["metrics"]["cvssMetricV2"][0]["exploitabilityScore"] 
 
-    print("Vulnerabilit ID: ", cve_id)
-    print("Vulnerability Description: ", cve_description)
-    print("Severity: ",severity)
-    print("Expoitability Score: ", exploit_score)
+def fetch_cve(base_url):
+    with urllib.request.urlopen(base_url) as response:
+        raw_data = response.read()
+        return raw_data.decode()
+
+def parse_data(fetched_cves):
+    parsed_cves = json.loads(fetched_cves)
+    return parsed_cves
+    
+def extract_cve_data(fetched_cves):
+    fetched_cves = parse_data(fetched_cves)
+    vlnr_data = fetched_cves["vulnerabilities"]  
+    extracted_cves = []
+    for data in vlnr_data:
+        cve = data["cve"]
+        cve_id = cve["id"]
+        cve_description = cve["descriptions"][0]["value"]
+        severity = cve["metrics"]["cvssMetricV2"][0]["baseSeverity"]
+        exploit_score = cve["metrics"]["cvssMetricV2"][0]["exploitabilityScore"]
+        
+        extracted_cves.append(cve_id)
+        extracted_cves.append(cve_description)
+        extracted_cves.append(severity)
+        extracted_cves.append(exploit_score)
+    return extracted_cves        
+    
+                        
+fetched_cves = fetch_cve(serviceUrl)
+
+extracted_cves = extract_cve_data(fetched_cves)
+
+for item in extracted_cves:
+    print(item)
+
+
+
+
+    # with open ("cve_data.json", "r") as file:
+    #     data = file.read()
+    #     data = json.loads(data)
+
+
+
+
+# vlnrablty = data["vulnerabilities"][0]["cve"]
+
+#     cve_id = vlnrablty["id"]
+#     cve_description = vlnrablty["descriptions"][0]["value"]
+#     severity = vlnrablty["metrics"]["cvssMetricV2"][0]["baseSeverity"]
+#     exploit_score = vlnrablty["metrics"]["cvssMetricV2"][0]["exploitabilityScore"] 
+
+#     print("Vulnerabilit ID: ", cve_id)
+#     print("Vulnerability Description: ", cve_description)
+#     print("Severity: ",severity)
+#     print("Expoitability Score: ", exploit_score)
