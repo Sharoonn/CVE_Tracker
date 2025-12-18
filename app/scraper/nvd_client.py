@@ -1,4 +1,6 @@
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import json
 # import ssl
 
@@ -14,24 +16,22 @@ import json
 # #     api_key = ""
 
 
-
-# param = ""
-
-# fhand = urllib.request.urlopen(serviceUrl)
-
-# data = dict()
-
-# data = fhand.read().decode()
-
-# js = json.loads(data)
-
-# with open("data_file.json", "w") as file:
-#     # json.dump(data, json_file, indent=4)
-#     file.write(data)
+class Cve:
+    def __init__(self, cve_id, description, severity, exploit_score):
+        self.cve_id = cve_id
+        self.description = description
+        self.severity = severity
+        self.exploit_score = exploit_score
 
 
-serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0/?resultsPerPage=10&startIndex=0"
+serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0/?"
 
+
+def url():
+    params = dict()
+    params["resultsPerPage"] = "10"
+    url = serviceUrl + urllib.parse.urlencode(params)
+    return url
 
 
 def fetch_cve(base_url):
@@ -39,43 +39,56 @@ def fetch_cve(base_url):
         raw_data = response.read()
         return raw_data.decode()
 
+
+fetched_cves = fetch_cve(url())
+
+
 def parse_data(fetched_cves):
     parsed_cves = json.loads(fetched_cves)
     return parsed_cves
-    
-def extract_cve_data(fetched_cves):
-    fetched_cves = parse_data(fetched_cves)
-    vlnr_data = fetched_cves["vulnerabilities"]  
+
+
+def extract_cve_data(parsed_cves):
+
+    vulnerabilities = parsed_cves["vulnerabilities"]
     extracted_cves = []
-    for data in vlnr_data:
+    for data in vulnerabilities:
         cve = data["cve"]
         cve_id = cve["id"]
         cve_description = cve["descriptions"][0]["value"]
-        severity = cve["metrics"]["cvssMetricV2"][0]["baseSeverity"]
-        exploit_score = cve["metrics"]["cvssMetricV2"][0]["exploitabilityScore"]
-        
-        extracted_cves.append(cve_id)
-        extracted_cves.append(cve_description)
-        extracted_cves.append(severity)
-        extracted_cves.append(exploit_score)
-    return extracted_cves        
-    
-                        
-fetched_cves = fetch_cve(serviceUrl)
 
-extracted_cves = extract_cve_data(fetched_cves)
+        severity = "Unknown"
+        exploit_score = 0.0
 
-for item in extracted_cves:
-    print(item)
+        metric = cve.get("metrics", {})
 
+        if "cvssMetricV31" in metric and len(metric["cvssMetricV31"]) != 0:
+            cvss_mv31 = metric["cvssMetricV31"][0]
+            severity = cvss_mv31.get("baseSeverity", "unknown")
+            exploit_score = cvss_mv31.get("exploitabilityScore", 0.0)
 
+        elif "cvssMetricV2" in metric and len(metric["cvssMetricV2"]) != 0:
+            severity = metric["cvssMetricV2"][0]["baseSeverity"]
+            exploit_score = metric["cvssMetricV2"][0]["exploitabilityScore"]
+        else:
+            severity = "Unknown"
+            exploit_score = 0.0
 
-
-    # with open ("cve_data.json", "r") as file:
-    #     data = file.read()
-    #     data = json.loads(data)
+        cve_obj = Cve(cve_id, cve_description, severity, exploit_score)
+        extracted_cves.append(cve_obj)
+    return extracted_cves
 
 
+# if "cvssMetricV31" in metric and len(metric["cvssMetricV31"]) != 0:
+#     severity = metric["cvssMetricV31"][0]["baseSeverity"]
+#     exploit_score = metric["cvssMetricV31"][0]["exploitabilityScore"]
+extracted_cves = extract_cve_data(parse_data(fetched_cves))
+
+print(extracted_cves)
+
+# with open ("cve_data.json", "r") as file:
+#     data = file.read()
+#     data = json.loads(data)
 
 
 # vlnrablty = data["vulnerabilities"][0]["cve"]
@@ -83,7 +96,7 @@ for item in extracted_cves:
 #     cve_id = vlnrablty["id"]
 #     cve_description = vlnrablty["descriptions"][0]["value"]
 #     severity = vlnrablty["metrics"]["cvssMetricV2"][0]["baseSeverity"]
-#     exploit_score = vlnrablty["metrics"]["cvssMetricV2"][0]["exploitabilityScore"] 
+#     exploit_score = vlnrablty["metrics"]["cvssMetricV2"][0]["exploitabilityScore"]
 
 #     print("Vulnerabilit ID: ", cve_id)
 #     print("Vulnerability Description: ", cve_description)
