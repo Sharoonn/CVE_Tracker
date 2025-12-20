@@ -23,6 +23,10 @@ class Cve:
         self.severity = severity
         self.exploit_score = exploit_score
 
+    def __repr__(self):
+        data = f"Cve ID: {self.cve_id}\nDescription: {self.description}\nSeverity: {self.severity}\nExploit Score: {self.exploit_score}"
+        return data
+
 
 serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0/?"
 
@@ -79,9 +83,6 @@ def extract_cve_data(parsed_cves):
     return extracted_cves
 
 
-# if "cvssMetricV31" in metric and len(metric["cvssMetricV31"]) != 0:
-#     severity = metric["cvssMetricV31"][0]["baseSeverity"]
-#     exploit_score = metric["cvssMetricV31"][0]["exploitabilityScore"]
 extracted_cves = extract_cve_data(parse_data(fetched_cves))
 
 print(extracted_cves)
