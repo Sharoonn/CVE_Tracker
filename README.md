@@ -18,8 +18,6 @@ Built as a learning project to practice API consumption, defensive JSON parsing,
 # How to run
 * Python version 3.13.7
 
-* pip install -r requirements.txt
-
 * python main.py
 
 # What’s next 
