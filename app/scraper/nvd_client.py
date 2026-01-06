@@ -4,16 +4,7 @@ import urllib.error
 import json
 # import ssl
 
-# # api_key = False
-
-# # if (api_key == False):
-
-# #     api_key = "3659d776-1785-40e7-b75a-f44ab45b271b"
-# serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Microsoft"
-
-# # "https://services.nvd.nist.gov/rest/json/cves/2.0/?KeywordSearch=Microsoft"
-
-# #     api_key = ""
+# api_key = "3659d776-1785-40e7-b75a-f44ab45b271b"
 
 
 class Cve:
@@ -28,13 +19,13 @@ class Cve:
         return data
 
 
-serviceUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0/?"
+end_point = "https://services.nvd.nist.gov/rest/json/cves/2.0/?"
 
 
 def url():
     params = dict()
     params["resultsPerPage"] = "10"
-    url = serviceUrl + urllib.parse.urlencode(params)
+    url = end_point + urllib.parse.urlencode(params)
     return url
 
 
