@@ -77,20 +77,3 @@ def extract_cve_data(parsed_cves):
 extracted_cves = extract_cve_data(parse_data(fetched_cves))
 
 print(extracted_cves)
-
-# with open ("cve_data.json", "r") as file:
-#     data = file.read()
-#     data = json.loads(data)
-
-
-# vlnrablty = data["vulnerabilities"][0]["cve"]
-
-#     cve_id = vlnrablty["id"]
-#     cve_description = vlnrablty["descriptions"][0]["value"]
-#     severity = vlnrablty["metrics"]["cvssMetricV2"][0]["baseSeverity"]
-#     exploit_score = vlnrablty["metrics"]["cvssMetricV2"][0]["exploitabilityScore"]
-
-#     print("Vulnerabilit ID: ", cve_id)
-#     print("Vulnerability Description: ", cve_description)
-#     print("Severity: ",severity)
-#     print("Expoitability Score: ", exploit_score)
