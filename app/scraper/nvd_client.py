@@ -83,9 +83,8 @@ def extract_cve_data(parsed_cves):
 
 
 extracted_cves = extract_cve_data(parse_data(fetched_cves))
-print(type(fetched_cves))
 
-# print(extracted_cves)
+print(extracted_cves)
 
 
 # Saving Fetched CVEs data to a cve_data.json file
