@@ -4,7 +4,7 @@ import urllib.error
 import json
 # import ssl
 
-# api_key = "3659d776-1785-40e7-b75a-f44ab45b271b"
+api_key = "3659d776-1785-40e7-b75a-f44ab45b271b"
 
 
 class Cve:
@@ -21,6 +21,10 @@ class Cve:
 
 end_point = "https://services.nvd.nist.gov/rest/json/cves/2.0/?"
 
+custom_header = {
+    "apikey": api_key
+}
+
 
 def url():
     params = dict()
@@ -29,13 +33,15 @@ def url():
     return url
 
 
-def fetch_cve(base_url):
-    with urllib.request.urlopen(base_url) as response:
+def fetch_cve(url, custom_header):
+    # Giving custom header, providing apikey in the header of the request
+    req = urllib.request.Request(url, headers=custom_header)
+    with urllib.request.urlopen(req) as response:
         raw_data = response.read()
         return raw_data.decode()
 
 
-fetched_cves = fetch_cve(url())
+fetched_cves = fetch_cve(url(), custom_header)
 
 
 def parse_data(fetched_cves):
@@ -57,6 +63,8 @@ def extract_cve_data(parsed_cves):
 
         metric = cve.get("metrics", {})
 
+        # Error Handling Logic
+        # Handling if the key cvssMetricV31 is not in the metric data
         if "cvssMetricV31" in metric and len(metric["cvssMetricV31"]) != 0:
             cvss_mv31 = metric["cvssMetricV31"][0]
             severity = cvss_mv31.get("baseSeverity", "unknown")
@@ -77,3 +85,8 @@ def extract_cve_data(parsed_cves):
 extracted_cves = extract_cve_data(parse_data(fetched_cves))
 
 print(extracted_cves)
+
+
+# Saving Fetched CVEs data to a cve_data.json file
+with open("cve_data.json", "w") as f:
+    json.dump(parse_data(fetched_cves), f, indent=4)
