@@ -1,10 +1,8 @@
 import urllib.request
 import urllib.parse
-import urllib.error
+import requests
 import json
 # import ssl
-
-api_key = "3659d776-1785-40e7-b75a-f44ab45b271b"
 
 
 class Cve:
@@ -21,37 +19,26 @@ class Cve:
 
 end_point = "https://services.nvd.nist.gov/rest/json/cves/2.0/?"
 
+api_key = "3659d776-1785-40e7-b75a-f44ab45b271b"
+
 custom_header = {
-    "apikey": api_key
+    "apiKey": api_key
 }
 
-
-def url():
-    params = dict()
-    params["resultsPerPage"] = "10"
-    url = end_point + urllib.parse.urlencode(params)
-    return url
+payload = {"resultsPerPage": "10"}
 
 
-def fetch_cve(url, custom_header):
-    # Giving custom header, providing apikey in the header of the request
-    req = urllib.request.Request(url, headers=custom_header)
-    with urllib.request.urlopen(req) as response:
-        raw_data = response.read()
-        return raw_data.decode()
+def fetch_cve(end_point, payload, custom_header):
+    response = requests.get(end_point, params=payload, headers=custom_header)
+    return response.json()
 
 
-fetched_cves = fetch_cve(url(), custom_header)
+fetched_cves = fetch_cve(end_point, payload, custom_header)
 
 
-def parse_data(fetched_cves):
-    parsed_cves = json.loads(fetched_cves)
-    return parsed_cves
+def extract_cve_data(fetched_cves):
 
-
-def extract_cve_data(parsed_cves):
-
-    vulnerabilities = parsed_cves["vulnerabilities"]
+    vulnerabilities = fetched_cves["vulnerabilities"]
     extracted_cves = []
     for data in vulnerabilities:
         cve = data["cve"]
@@ -82,11 +69,11 @@ def extract_cve_data(parsed_cves):
     return extracted_cves
 
 
-extracted_cves = extract_cve_data(parse_data(fetched_cves))
+extracted_cves = extract_cve_data(fetched_cves)
 
 print(extracted_cves)
 
 
 # Saving Fetched CVEs data to a cve_data.json file
 with open("cve_data.json", "w") as f:
-    json.dump(parse_data(fetched_cves), f, indent=4)
+    json.dump(fetched_cves, f, indent=4)
